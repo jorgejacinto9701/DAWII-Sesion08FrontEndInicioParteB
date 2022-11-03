@@ -29,7 +29,7 @@ export class CrudDocenteComponent implements OnInit {
     dni:"",
     estado:1,
     ubigeo:{
-      idUbigeo: 0,
+      idUbigeo: -1,
       departamento:"-1",
       provincia:"-1",
       distrito:"-1",
@@ -46,18 +46,61 @@ export class CrudDocenteComponent implements OnInit {
       this.ubigeoService.listaProvincias(this.docente.ubigeo?.departamento).subscribe(
         response =>  this.provincias= response
       );
+      this.docente.ubigeo!.provincia = "-1";
+      this.distritos = [];
+      this.docente.ubigeo!.idUbigeo = -1;
   }
 
   cargaDistrito(){
     this.ubigeoService.listaDistritos(this.docente.ubigeo?.departamento, this.docente.ubigeo?.provincia).subscribe(
       response =>  this.distritos= response
      );
+     this.docente.ubigeo!.idUbigeo = -1;
    }
 
   ngOnInit(): void {
   }
 
+  consulta(){
+        this.docenteService.consultaDocente(this.filtro==""?"todos":this.filtro).subscribe(
+           x => this.docentes = x
+        );
+  }
 
+  registra(){
+        this.docenteService.registraDocente(this.docente).subscribe(
+            x => {
+                 Swal.fire('Mensaje',x.mensaje,'info');
+                 document.getElementById("btn_reg_limpiar")?.click();
+            }
+        );
+  }
 
+  busca(obj:Docente){
+      console.log("obj.nombre>>> " + obj.nombre );
+      this.docente = obj;
+      
+      this.ubigeoService.listaProvincias(this.docente.ubigeo!.departamento).subscribe(
+          x =>  this.provincias= x
+      );
+      
+      this.ubigeoService.listaDistritos(this.docente.ubigeo!.departamento, this.docente.ubigeo!.provincia).subscribe(
+          x =>  this.distritos= x
+       );
+  }
+
+  actualiza(){
+    this.docenteService.actualizaDocente(this.docente).subscribe(
+        x => {
+            Swal.fire('Mensaje',x.mensaje,'info')
+            document.getElementById("btn_act_limpiar")?.click();
+        }
+    );
+  }
+
+  actualizaEstado(obj:Docente){
+    obj.estado = obj.estado == 1 ? 0 : 1;
+    this.docenteService.actualizaDocente(obj).subscribe();
+  }
 
 }

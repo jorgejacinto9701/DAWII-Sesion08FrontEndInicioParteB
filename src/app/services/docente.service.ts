@@ -12,6 +12,17 @@ export class DocenteService {
  
   constructor(private http:HttpClient) { }
  
+  consultaDocente(filtro:string):Observable<any>{
+    return this.http.get(baseUrl+"/listaDocentePorNombreLike/" + filtro);
+  }
+
+  registraDocente(aux:Docente):Observable<any>{
+    return this.http.post(baseUrl+"/registraDocente", aux);
+  }
+
+  actualizaDocente(aux:Docente):Observable<any>{
+    return this.http.put(baseUrl+"/actualizaDocente", aux);
+  }
 
 
 }
